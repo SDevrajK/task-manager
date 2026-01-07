@@ -1,7 +1,7 @@
 """Main Textual TUI application for task manager."""
 
 from textual.app import ComposeResult
-from textual.containers import Container, Horizontal, Vertical
+from textual.containers import Container, Horizontal, Vertical, ScrollableContainer
 from textual.widgets import Static, Button
 from textual.binding import Binding
 from textual.screen import Screen
@@ -14,13 +14,14 @@ from task_manager.models import Task
 
 
 class TaskListDisplay(Static):
-    """Widget for displaying task list."""
+    """Widget for displaying scrollable task list with headers."""
 
     DEFAULT_CSS = """
     TaskListDisplay {
         width: 1fr;
         height: 1fr;
         border: solid $primary;
+        overflow: auto;
     }
     """
 
@@ -30,21 +31,33 @@ class TaskListDisplay(Static):
         self.tasks = tasks or []
 
     def render(self) -> str:
-        """Render the task list."""
-        if not self.tasks:
-            return "[dim]No tasks[/dim]"
-
+        """Render the task list with headers."""
         lines = []
-        for task in self.tasks[:50]:  # Show up to 50 tasks
+
+        # Add header row
+        header = f"{'ID':>3s}  {'Prio':4s}  {'Status':>11s}  {'Deadline':10s}  {'Description'}"
+        lines.append(f"[bold cyan]{header}[/]")
+        lines.append("[dim]" + "─" * 80 + "[/]")
+
+        if not self.tasks:
+            lines.append("[dim]No tasks[/dim]")
+            return "\n".join(lines)
+
+        for task in self.tasks:
             status_color = self._get_status_color(task.status)
             priority_sym = {"high": "🔴", "medium": "🟡", "low": "🔵"}.get(task.priority, "⚪")
             deadline = task.deadline if task.deadline else "-"
 
+            # Truncate description to 40 chars without wrapping
+            desc = task.description[:40]
+            if len(task.description) > 40:
+                desc = desc.rstrip() + "…"
+
             line = (
-                f"{task.id:3d} {priority_sym} "
-                f"[{status_color}]{task.status:12s}[/] "
-                f"{deadline:10s} "
-                f"{task.description[:45]}"
+                f"{task.id:>3d}  {priority_sym}  "
+                f"[{status_color}]{task.status:>11s}[/]  "
+                f"{deadline:10s}  "
+                f"{desc}"
             )
             lines.append(line)
 
