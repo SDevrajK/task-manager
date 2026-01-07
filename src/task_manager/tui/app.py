@@ -12,6 +12,7 @@ from task_manager.commands import TaskCommands
 from task_manager.queries import TaskQuery
 from task_manager.storage import TaskStorage
 from task_manager.models import Task
+from task_manager.claude_integration import ClaudeIntegration
 from task_manager.tui.screens.action_dialog import ActionDialog
 from task_manager.tui.screens.create_task_screen import CreateTaskScreen
 
@@ -211,6 +212,7 @@ class TaskManagerScreen(Screen):
         self.config = config
         self.commands = TaskCommands(config)
         self.storage = TaskStorage(config)
+        self.claude = ClaudeIntegration(config)
         self.tasks = []
         self.bucket = None
         self.current_filter_index = 0
@@ -343,13 +345,24 @@ class TaskManagerScreen(Screen):
         try:
             if action == "activate":
                 self.commands.update(task.id, status="IN_PROGRESS")
-                self.notify(f"Task #{task.id} activated", title="Success")
+                # Update CLAUDE.md
+                success, msg = self.claude.activate_task(task, mode="quick")
+                if success:
+                    self.notify(msg, title="Success")
+                else:
+                    self.notify(f"Task activated. CLAUDE.md: {msg}", title="Info")
             elif action == "deactivate":
                 self.commands.update(task.id, status="TODO")
-                self.notify(f"Task #{task.id} deactivated", title="Success")
+                # Remove from CLAUDE.md
+                success, msg = self.claude.deactivate_task(task)
+                if success:
+                    self.notify(msg, title="Success")
             elif action == "complete":
                 self.commands.complete(task.id)
-                self.notify(f"Task #{task.id} completed", title="Success")
+                # Move in CLAUDE.md
+                success, msg = self.claude.complete_task(task)
+                if success:
+                    self.notify(msg, title="Success")
             elif action == "reopen":
                 self.commands.update(task.id, status="TODO")
                 self.notify(f"Task #{task.id} reopened", title="Success")
@@ -358,7 +371,10 @@ class TaskManagerScreen(Screen):
                 self.notify(f"Task #{task.id} unblocked", title="Success")
             elif action == "delete":
                 self.commands.delete(task.id, confirm=True)
-                self.notify(f"Task #{task.id} deleted", title="Success")
+                # Remove from CLAUDE.md
+                success, msg = self.claude.deactivate_task(task)
+                if success:
+                    self.notify(msg, title="Success")
             elif action == "edit_notes":
                 self.notify("Edit notes feature coming soon", title="TODO")
                 return
