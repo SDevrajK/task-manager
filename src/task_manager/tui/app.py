@@ -13,6 +13,7 @@ from task_manager.queries import TaskQuery
 from task_manager.storage import TaskStorage
 from task_manager.models import Task
 from task_manager.tui.screens.action_dialog import ActionDialog
+from task_manager.tui.screens.create_task_screen import CreateTaskScreen
 
 
 class TaskListDisplay(Static):
@@ -287,7 +288,31 @@ class TaskManagerScreen(Screen):
 
     def action_new_task(self) -> None:
         """Create new task."""
-        self.notify("New task feature coming soon", title="TODO")
+        projects = self.storage.get_project_codes().keys()
+        self.app.push_screen(
+            CreateTaskScreen(list(projects)),
+            callback=self._handle_create_task_result
+        )
+
+    def _handle_create_task_result(self, form_data: dict) -> None:
+        """Handle result from create task screen."""
+        if form_data is None:
+            return
+
+        try:
+            task = self.commands.add(
+                description=form_data["description"],
+                project=form_data["project"],
+                priority=form_data.get("priority", "medium"),
+                deadline=form_data.get("deadline") or None,
+                task_type=form_data.get("task_type", "work"),
+                tags=form_data.get("tags", []),
+                notes=form_data.get("notes") or None,
+            )
+            self.notify(f"Task #{task.id} created", title="Success")
+            self.refresh_task_list()
+        except Exception as e:
+            self.notify(f"Error: {str(e)}", title="Error")
 
     def action_search(self) -> None:
         """Search tasks."""
