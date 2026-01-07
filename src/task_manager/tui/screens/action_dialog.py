@@ -47,18 +47,18 @@ class ActionDialog(ModalScreen):
     def __init__(self, task: Task):
         """Initialize action dialog for a specific task."""
         super().__init__()
-        self.task = task
+        self._selected_task = task
 
     def compose(self):
         """Create dialog content."""
         with Container(id="action-dialog"):
-            yield Label(f"Task #{self.task.id}: {self.task.description[:30]}", id="title")
+            yield Label(f"Task #{self._selected_task.id}: {self._selected_task.description[:30]}", id="title")
             with Vertical(id="actions"):
                 yield from self._get_action_buttons()
 
     def _get_action_buttons(self):
         """Generate action buttons based on task status."""
-        status = self.task.status
+        status = self._selected_task.status
 
         if status == "TODO":
             yield Button("Activate", id="activate", variant="primary")
