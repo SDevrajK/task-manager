@@ -175,7 +175,7 @@ class TaskManagerScreen(Screen):
     BINDINGS = [
         Binding("up", "select_previous", "Previous [↑]"),
         Binding("down", "select_next", "Next [↓]"),
-        Binding("ctrl+h", "cycle_view", "Cycle [Ctrl-H]"),
+        Binding("tab", "cycle_view", "Cycle [Tab]"),
         Binding("ctrl+n", "new_task", "New [Ctrl-N]"),
         Binding("ctrl+f", "search", "Search [Ctrl-F]"),
         Binding("e", "show_actions", "Actions [e]"),
@@ -235,7 +235,7 @@ class TaskManagerScreen(Screen):
         self.filter_bar = TaskFilterBar(self.config)
         yield self.filter_bar
         yield Static(
-            "[dim]↑↓ navigate | e actions | Ctrl-H cycle | Ctrl-N new | Ctrl-F search | q quit[/dim]",
+            "[dim]↑↓ navigate | Tab cycle | e actions | Ctrl-N new | Ctrl-F search | q quit[/dim]",
             id="footer",
         )
 
@@ -286,6 +286,8 @@ class TaskManagerScreen(Screen):
     def action_cycle_view(self) -> None:
         """Cycle through filter views."""
         self.current_filter_index = (self.current_filter_index + 1) % len(self.filter_modes)
+        current_status = self.filter_modes[self.current_filter_index]
+        self.notify(f"Switched to {current_status} view", title="Filter")
         self.refresh_task_list()
 
     def action_new_task(self) -> None:
