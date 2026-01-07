@@ -227,8 +227,9 @@ class TaskManagerScreen(Screen):
         yield Static("[bold]TASK MANAGER[/bold]", id="header")
 
         with Horizontal(id="main"):
-            self.task_list_display = TaskListDisplay()
-            yield self.task_list_display
+            with ScrollableContainer():
+                self.task_list_display = TaskListDisplay()
+                yield self.task_list_display
             self.task_detail_display = TaskDetailDisplay()
             yield self.task_detail_display
 
