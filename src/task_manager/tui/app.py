@@ -177,7 +177,6 @@ class TaskManagerScreen(Screen):
         Binding("down", "select_next", "Next [↓]"),
         Binding("tab", "cycle_view", "Cycle [Tab]"),
         Binding("ctrl+n", "new_task", "New [Ctrl-N]"),
-        Binding("ctrl+f", "search", "Search [Ctrl-F]"),
         Binding("e", "show_actions", "Actions [e]"),
         Binding("q", "quit", "Quit [q]"),
     ]
@@ -236,7 +235,7 @@ class TaskManagerScreen(Screen):
         self.filter_bar = TaskFilterBar(self.config)
         yield self.filter_bar
         yield Static(
-            "[dim]↑↓ navigate | Tab cycle | e actions | Ctrl-N new | Ctrl-F search | q quit[/dim]",
+            "[dim]↑↓ navigate | Tab cycle | e actions | Ctrl-N new | q quit[/dim]",
             id="footer",
         )
 
