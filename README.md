@@ -5,15 +5,15 @@ A unified task management tool with both CLI and interactive TUI (Text User Inte
 ## Features
 
 ### Interactive TUI Mode
-- **Task List View**: Navigate tasks with arrow keys or Vim bindings (j/k)
+- **Task List View**: Navigate tasks with arrow keys
 - **Color-Coded Status**: Visual distinction between pending, active, and completed tasks
 - **Real-Time Filtering**: Cycle through views (All → Pending → Active → Completed)
 - **Task Details**: See full task information in a preview pane
 - **Keyboard Shortcuts**:
-  - `Ctrl-H`: Cycle through filter views
+  - `Tab`: Cycle through filter views
   - `Ctrl-N`: Create new task
-  - `↑/↓` or `j/k`: Navigate
-  - `Enter`: Select and show actions
+  - `↑/↓`: Navigate tasks
+  - `e`: Show task actions
   - `q`: Quit
 
 ### CLI Mode
@@ -36,7 +36,7 @@ task stats
 
 ### Option 1: Install from source (Recommended)
 ```bash
-git clone https://github.com/yourusername/task-manager.git
+git clone https://github.com/SDevrajK/task-manager.git
 cd task-manager
 pip install -e .
 ```
@@ -44,7 +44,7 @@ pip install -e .
 ### Option 2: Manual setup
 ```bash
 # Clone and use directly
-git clone https://github.com/yourusername/task-manager.git
+git clone https://github.com/SDevrajK/task-manager.git
 cd task-manager
 
 # Create data directory
@@ -269,12 +269,9 @@ src/task_manager/
 | Shortcut | Action |
 |----------|--------|
 | `↑` / `↓` | Navigate task list |
-| `j` / `k` | Vim-style navigation |
-| `Enter` | Show task actions |
-| `Ctrl-H` | Cycle filter view |
+| `Tab` | Cycle filter view |
+| `e` | Show task actions |
 | `Ctrl-N` | Create new task |
-| `Ctrl-F` | Search/filter |
-| `/` | Quick search |
 | `q` | Quit |
 
 ## Troubleshooting
@@ -311,4 +308,4 @@ See CHANGELOG.md for release notes and version history
 ## Support
 
 For issues, questions, or suggestions, please open an issue on GitHub:
-https://github.com/yourusername/task-manager/issues
+https://github.com/SDevrajK/task-manager/issues
