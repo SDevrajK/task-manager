@@ -1,5 +1,6 @@
 """Main Textual TUI application for task manager."""
 
+from datetime import datetime
 from textual.app import ComposeResult
 from textual.containers import Container, Horizontal, Vertical, ScrollableContainer
 from textual.widgets import Static, Button
@@ -11,6 +12,7 @@ from task_manager.commands import TaskCommands
 from task_manager.queries import TaskQuery
 from task_manager.storage import TaskStorage
 from task_manager.models import Task
+from task_manager.tui.screens.action_dialog import ActionDialog
 
 
 class TaskListDisplay(Static):
@@ -174,6 +176,7 @@ class TaskManagerScreen(Screen):
         Binding("ctrl+h", "cycle_view", "Cycle [Ctrl-H]"),
         Binding("ctrl+n", "new_task", "New [Ctrl-N]"),
         Binding("ctrl+f", "search", "Search [Ctrl-F]"),
+        Binding("e", "show_actions", "Actions [e]"),
         Binding("q", "quit", "Quit [q]"),
     ]
 
@@ -229,7 +232,7 @@ class TaskManagerScreen(Screen):
         self.filter_bar = TaskFilterBar(self.config)
         yield self.filter_bar
         yield Static(
-            "[dim]↑↓ navigate | Ctrl-H cycle | Ctrl-N new | Ctrl-F search | q quit[/dim]",
+            "[dim]↑↓ navigate | e actions | Ctrl-H cycle | Ctrl-N new | Ctrl-F search | q quit[/dim]",
             id="footer",
         )
 
@@ -289,6 +292,56 @@ class TaskManagerScreen(Screen):
     def action_search(self) -> None:
         """Search tasks."""
         self.notify("Search feature coming soon", title="TODO")
+
+    def action_show_actions(self) -> None:
+        """Show action dialog for selected task."""
+        if not self.tasks or self.selected_task_index >= len(self.tasks):
+            self.notify("No task selected", title="Error")
+            return
+
+        selected_task = self.tasks[self.selected_task_index]
+        self.app.push_screen(
+            ActionDialog(selected_task),
+            callback=self._handle_action_result
+        )
+
+    def _handle_action_result(self, action: str) -> None:
+        """Handle the result from the action dialog."""
+        if action is None:
+            return
+
+        if not self.tasks or self.selected_task_index >= len(self.tasks):
+            return
+
+        task = self.tasks[self.selected_task_index]
+
+        try:
+            if action == "activate":
+                self.commands.update(task.id, status="IN_PROGRESS")
+                self.notify(f"Task #{task.id} activated", title="Success")
+            elif action == "deactivate":
+                self.commands.update(task.id, status="TODO")
+                self.notify(f"Task #{task.id} deactivated", title="Success")
+            elif action == "complete":
+                self.commands.complete(task.id)
+                self.notify(f"Task #{task.id} completed", title="Success")
+            elif action == "reopen":
+                self.commands.update(task.id, status="TODO")
+                self.notify(f"Task #{task.id} reopened", title="Success")
+            elif action == "unblock":
+                self.commands.update(task.id, status="TODO")
+                self.notify(f"Task #{task.id} unblocked", title="Success")
+            elif action == "delete":
+                self.commands.delete(task.id, confirm=True)
+                self.notify(f"Task #{task.id} deleted", title="Success")
+            elif action == "edit_notes":
+                self.notify("Edit notes feature coming soon", title="TODO")
+                return
+
+            # Refresh task list after action
+            self.refresh_task_list()
+        except Exception as e:
+            self.notify(f"Error: {str(e)}", title="Error")
 
     def action_quit(self) -> None:
         """Quit the application."""
