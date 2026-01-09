@@ -116,3 +116,34 @@ The text appears to be the same color as the background, making it impossible to
 - Edit task screen: `src/task_manager/tui/screens/edit_task_screen.py`
 - TUI app styling: `src/task_manager/tui/app.py` (check theme/CSS)
 - Input widget configuration: Check Textual Input widget styling
+
+## Feature Requests
+
+### 4. Replace "ALL" Filter with "Uncompleted" Filter
+
+**Type**: Enhancement
+**Priority**: Medium
+**Status**: Identified (2026-01-09)
+
+**Description**:
+The task list currently has an "ALL" filter that shows every task. It would be more useful to have an "Uncompleted" filter that shows all tasks EXCEPT those marked as DONE.
+
+**Rationale**:
+- Most users care about active work (TODO, IN_PROGRESS, BLOCKED)
+- Completed tasks clutter the view
+- "Uncompleted" is more useful for daily workflow
+- Reduces need to manually filter out DONE tasks
+
+**Current Behavior**:
+- "ALL" filter shows all tasks regardless of status
+- Users have to scroll past completed tasks to see active work
+
+**Desired Behavior**:
+- "Uncompleted" filter shows TODO, IN_PROGRESS, BLOCKED (excludes DONE)
+- Cleaner view focused on active tasks
+- Can still view completed tasks separately if needed
+
+**Related Code**:
+- Task filtering: `src/task_manager/queries.py:TaskQuery.filter()`
+- TUI list display: `src/task_manager/tui/screens/` (task list screen)
+- Filter options: Wherever filter buttons/options are defined
