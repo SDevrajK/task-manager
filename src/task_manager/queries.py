@@ -213,6 +213,36 @@ class TaskQuery:
             groups[task.status].append(task)
         return groups
 
+    @staticmethod
+    def get_time_logs_by_date_range(
+        bucket: TaskBucket,
+        start_date: str,
+        end_date: str,
+        project: Optional[str] = None,
+        client: Optional[str] = None,
+    ) -> List[tuple]:
+        """Get time logs within date range with task context.
+
+        Returns list of tuples: (task, time_log)
+        This allows access to both the log AND task metadata (client, project).
+        Filters by log.date, not task.deadline.
+        """
+        results = []
+
+        for task in bucket.tasks:
+            # Filter by project/client if specified
+            if project and task.project != project:
+                continue
+            if client and task.employer_client != client:
+                continue
+
+            # Get time logs within range
+            for log in task.time_logs:
+                if start_date <= log.date <= end_date:
+                    results.append((task, log))
+
+        return results
+
 
 # Import timedelta for get_due_this_week
 from datetime import timedelta

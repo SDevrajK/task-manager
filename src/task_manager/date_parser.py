@@ -12,6 +12,7 @@ class DateParser:
     PATTERNS = {
         r"^tomorrow$": lambda: datetime.now() + timedelta(days=1),
         r"^today$": lambda: datetime.now(),
+        r"^yesterday$": lambda: datetime.now() - timedelta(days=1),
         r"^next\s+monday$": lambda: _next_weekday(0),
         r"^next\s+tuesday$": lambda: _next_weekday(1),
         r"^next\s+wednesday$": lambda: _next_weekday(2),
@@ -19,6 +20,13 @@ class DateParser:
         r"^next\s+friday$": lambda: _next_weekday(4),
         r"^next\s+saturday$": lambda: _next_weekday(5),
         r"^next\s+sunday$": lambda: _next_weekday(6),
+        r"^last\s+monday$": lambda: _last_weekday(0),
+        r"^last\s+tuesday$": lambda: _last_weekday(1),
+        r"^last\s+wednesday$": lambda: _last_weekday(2),
+        r"^last\s+thursday$": lambda: _last_weekday(3),
+        r"^last\s+friday$": lambda: _last_weekday(4),
+        r"^last\s+saturday$": lambda: _last_weekday(5),
+        r"^last\s+sunday$": lambda: _last_weekday(6),
         r"^monday$": lambda: _next_weekday(0),
         r"^tuesday$": lambda: _next_weekday(1),
         r"^wednesday$": lambda: _next_weekday(2),
@@ -32,6 +40,7 @@ class DateParser:
         r"^(\d+)\s+days?(?:\s+from\s+now)?$": lambda m: datetime.now() + timedelta(days=int(m.group(1))),
         r"^(\d+)\s+weeks?(?:\s+from\s+now)?$": lambda m: datetime.now() + timedelta(weeks=int(m.group(1))),
         r"^next\s+week$": lambda: datetime.now() + timedelta(weeks=1),
+        r"^last\s+week$": lambda: _last_week_start(),
         r"^next\s+month$": lambda: datetime.now() + timedelta(days=30),
     }
 
@@ -79,8 +88,8 @@ class DateParser:
         if result is None:
             raise ValueError(
                 f"Could not parse date: '{date_str}'. "
-                "Use YYYY-MM-DD or natural language like 'tomorrow', "
-                "'next friday', 'in 3 days'"
+                "Use YYYY-MM-DD or natural language like 'today', 'tomorrow', 'yesterday', "
+                "'next friday', 'last monday', 'in 3 days'"
             )
         return result
 
@@ -99,3 +108,27 @@ def _next_weekday(target_day: int) -> datetime:
         days_ahead = 7
 
     return today + timedelta(days=days_ahead)
+
+
+def _last_weekday(target_day: int) -> datetime:
+    """Get the last occurrence of target weekday (0=Monday, 6=Sunday)."""
+    today = datetime.now()
+    current_day = today.weekday()
+
+    # Calculate days to go back
+    days_back = current_day - target_day
+    if days_back < 0:  # Target day hasn't happened yet this week, go back to last week
+        days_back += 7
+    elif days_back == 0:  # Today is the target day, go back to last week
+        days_back = 7
+
+    return today - timedelta(days=days_back)
+
+
+def _last_week_start() -> datetime:
+    """Get the start of last week (Monday of last week)."""
+    today = datetime.now()
+    current_day = today.weekday()
+    # Go back to last Monday
+    days_to_monday = current_day + 7
+    return today - timedelta(days=days_to_monday)

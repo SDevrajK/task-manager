@@ -308,6 +308,31 @@ Examples:
         choices=["project", "client"],
         help="Group report by (default: project)",
     )
+    report_parser.add_argument(
+        "--by-project",
+        action="store_true",
+        help="Show breakdown by project within each client/employer",
+    )
+    report_parser.add_argument(
+        "--today",
+        action="store_true",
+        help="Show hours logged today",
+    )
+    report_parser.add_argument(
+        "--this-week",
+        action="store_true",
+        help="Show hours logged this week (Mon-Sun)",
+    )
+    report_parser.add_argument(
+        "--daily",
+        metavar="DATE",
+        help="Show hours logged on specific date (YYYY-MM-DD or natural language)",
+    )
+    report_parser.add_argument(
+        "--weekly",
+        metavar="WEEK_START",
+        help="Show hours logged in week starting from date (YYYY-MM-DD or natural language)",
+    )
 
     # ADD-PROJECT command
     addproject_parser = subparsers.add_parser("add-project", help="Add new project")
@@ -460,7 +485,11 @@ def main() -> int:
                 client=args.client,
                 start_date=args.start_date,
                 end_date=args.end_date,
-                group_by=args.group_by,
+                by_project=args.by_project,
+                today=args.today,
+                this_week=args.this_week,
+                daily=args.daily,
+                weekly=args.weekly,
             )
             print(output)
 

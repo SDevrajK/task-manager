@@ -311,9 +311,13 @@ class TaskCommands:
         client: Optional[str] = None,
         start_date: Optional[str] = None,
         end_date: Optional[str] = None,
-        group_by: str = "project",
+        by_project: bool = False,
+        today: bool = False,
+        this_week: bool = False,
+        daily: Optional[str] = None,
+        weekly: Optional[str] = None,
     ) -> str:
-        """Generate time tracking report."""
+        """Generate time tracking report grouped by client/employer."""
         bucket = self.storage.load_bucket()
 
         # Resolve project identifier (ID or code) to project ID
@@ -323,23 +327,46 @@ class TaskCommands:
                 raise ValueError(f"Project '{project}' not found (check project ID or code)")
             project = resolved_project
 
-        # Filter by project if specified
-        if project:
-            tasks = [t for t in bucket.tasks if t.project == project]
-        elif client:
-            tasks = [t for t in bucket.tasks if t.employer_client == client]
-        else:
-            tasks = bucket.tasks
+        # Determine date range based on flags
+        if today:
+            start_date = end_date = datetime.now().strftime("%Y-%m-%d")
+        elif this_week:
+            today_dt = datetime.now()
+            start_of_week = today_dt - timedelta(days=today_dt.weekday())
+            end_of_week = start_of_week + timedelta(days=6)
+            start_date = start_of_week.strftime("%Y-%m-%d")
+            end_date = end_of_week.strftime("%Y-%m-%d")
+        elif daily:
+            parsed_date = DateParser.parse_or_raise(daily)
+            start_date = end_date = parsed_date
+        elif weekly:
+            parsed_date = DateParser.parse_or_raise(weekly)
+            week_start = datetime.strptime(parsed_date, "%Y-%m-%d")
+            week_end = week_start + timedelta(days=6)
+            start_date = week_start.strftime("%Y-%m-%d")
+            end_date = week_end.strftime("%Y-%m-%d")
 
-        # Filter by date range if specified
-        if start_date or end_date:
-            start = start_date if start_date else "2000-01-01"
-            end = end_date if end_date else "2099-12-31"
-            tasks = TaskQuery.get_by_deadline_range(
-                TaskBucket(tasks=tasks), start, end
-            )
+        # Default to all time if no date filters
+        if not start_date:
+            start_date = "2000-01-01"
+        if not end_date:
+            end_date = "2099-12-31"
 
-        return TaskFormatter.format_time_report(tasks, group_by=group_by)
+        # Get time logs within date range
+        time_log_data = TaskQuery.get_time_logs_by_date_range(
+            bucket,
+            start_date=start_date,
+            end_date=end_date,
+            project=project,
+            client=client,
+        )
+
+        return TaskFormatter.format_time_report(
+            time_log_data,
+            by_project=by_project,
+            start_date=start_date,
+            end_date=end_date,
+        )
 
     def add_project(
         self,

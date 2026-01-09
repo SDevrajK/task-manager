@@ -62,20 +62,20 @@ class ActionDialog(ModalScreen):
 
         if status == "TODO":
             yield Button("Activate", id="activate", variant="primary")
-            yield Button("Edit Notes", id="edit_notes")
+            yield Button("Edit", id="edit", variant="warning")
             yield Button("Delete", id="delete", variant="error")
         elif status == "IN_PROGRESS":
             yield Button("Mark Complete", id="complete", variant="success")
-            yield Button("Deactivate", id="deactivate")
-            yield Button("Edit Notes", id="edit_notes")
+            yield Button("Deactivate", id="deactivate", variant="warning")
+            yield Button("Edit", id="edit", variant="warning")
             yield Button("Delete", id="delete", variant="error")
         elif status == "DONE":
-            yield Button("Reopen", id="reopen")
-            yield Button("Edit Notes", id="edit_notes")
+            yield Button("Reopen", id="reopen", variant="primary")
+            yield Button("Edit", id="edit", variant="warning")
         elif status == "BLOCKED":
             yield Button("Activate", id="activate", variant="primary")
-            yield Button("Unblock", id="unblock")
-            yield Button("Edit Notes", id="edit_notes")
+            yield Button("Unblock", id="unblock", variant="success")
+            yield Button("Edit", id="edit", variant="warning")
             yield Button("Delete", id="delete", variant="error")
 
     def on_button_pressed(self, event: Button.Pressed) -> None:

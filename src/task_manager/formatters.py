@@ -186,53 +186,65 @@ class TaskFormatter:
 
     @staticmethod
     def format_time_report(
-        tasks: List[Task],
-        group_by: str = "project",
+        time_log_data: List[tuple],
+        by_project: bool = False,
+        start_date: str = None,
+        end_date: str = None,
     ) -> str:
-        """Format time tracking report."""
-        if not tasks:
-            return "No tasks with time tracking data."
+        """Format time tracking report with hierarchical client > project grouping.
 
-        lines = ["Time Report:", ""]
+        Args:
+            time_log_data: List of (task, time_log) tuples
+            by_project: If True, show project breakdown within each client
+            start_date: Start date for report (YYYY-MM-DD)
+            end_date: End date for report (YYYY-MM-DD)
+        """
+        if not time_log_data:
+            return "No time logs found for the specified criteria."
 
-        if group_by == "project":
-            projects = {}
-            for task in tasks:
-                if task.time_spent_hours > 0:
-                    if task.project not in projects:
-                        projects[task.project] = {"hours": 0, "count": 0}
-                    projects[task.project]["hours"] += task.time_spent_hours
-                    projects[task.project]["count"] += 1
+        lines = ["Time Report:"]
 
-            lines.append("By Project:")
-            total = 0
-            for project in sorted(projects.keys()):
-                data = projects[project]
-                hours = data["hours"]
-                count = data["count"]
-                lines.append(f"  {project:20s}: {hours:8.1f} hours ({count} tasks)")
-                total += hours
+        # Add date range to header if applicable
+        if start_date and end_date:
+            if start_date == end_date:
+                lines.append(f"Date: {start_date}")
+            else:
+                lines.append(f"Period: {start_date} to {end_date}")
+        lines.append("")
 
-            lines.append(f"\nTotal: {total:.1f} hours")
+        # Group by client/employer first, then project
+        client_data = {}  # {client: {project: hours}}
 
-        elif group_by == "client":
-            clients = {}
-            for task in tasks:
-                if task.time_spent_hours > 0 and task.employer_client:
-                    if task.employer_client not in clients:
-                        clients[task.employer_client] = {"hours": 0, "count": 0}
-                    clients[task.employer_client]["hours"] += task.time_spent_hours
-                    clients[task.employer_client]["count"] += 1
+        for task, log in time_log_data:
+            client = task.employer_client if task.employer_client else "(No Client)"
+            project = task.project
 
-            lines.append("By Client/Employer:")
-            total = 0
-            for client in sorted(clients.keys()):
-                data = clients[client]
-                hours = data["hours"]
-                count = data["count"]
-                lines.append(f"  {client:20s}: {hours:8.1f} hours ({count} tasks)")
-                total += hours
+            if client not in client_data:
+                client_data[client] = {}
+            if project not in client_data[client]:
+                client_data[client][project] = 0.0
 
-            lines.append(f"\nTotal: {total:.1f} hours")
+            client_data[client][project] += log.hours
+
+        # Format output
+        grand_total = 0.0
+
+        for client in sorted(client_data.keys()):
+            projects = client_data[client]
+            client_total = sum(projects.values())
+
+            # Client header
+            lines.append(f"{client:30s}: {client_total:8.1f} hours")
+
+            # Project breakdown (if requested)
+            if by_project:
+                for project in sorted(projects.keys()):
+                    hours = projects[project]
+                    lines.append(f"  └─ {project:26s}: {hours:8.1f} hours")
+
+            grand_total += client_total
+
+        lines.append("")
+        lines.append(f"Total: {grand_total:.1f} hours")
 
         return "\n".join(lines)

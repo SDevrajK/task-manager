@@ -100,7 +100,7 @@ class CreateTaskScreen(ModalScreen):
                 with Vertical(classes="form-group"):
                     yield Label("Priority:", classes="form-label")
                     yield Select(
-                        [("low", "Low"), ("medium", "Medium"), ("high", "High")],
+                        [("Low", "low"), ("Medium", "medium"), ("High", "high")],
                         id="priority",
                         value="medium",
                     )
@@ -114,7 +114,7 @@ class CreateTaskScreen(ModalScreen):
                 with Vertical(classes="form-group"):
                     yield Label("Task Type:", classes="form-label")
                     yield Select(
-                        [("work", "Work"), ("personal", "Personal"), ("daily", "Daily")],
+                        [("Work", "work"), ("Personal", "personal"), ("Daily", "daily")],
                         id="task_type",
                         value="work",
                     )
