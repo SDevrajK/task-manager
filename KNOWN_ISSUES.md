@@ -76,3 +76,43 @@ Add a refresh hotkey (e.g., `F5`, `Ctrl+R`, or `r`) that reloads the task data f
 - TUI app: `src/task_manager/tui/app.py`
 - Storage layer: `src/task_manager/storage.py:TaskStorage`
 - Key bindings: Various screen classes in `src/task_manager/tui/screens/`
+
+### 3. Text Not Visible in Task Edit Form Fields
+
+**Severity**: High (impacts usability)
+**Status**: Identified (2026-01-09)
+
+**Description**:
+When editing a task, text in certain input fields is invisible. This affects:
+- Description field
+- Deadline field
+- Tags field
+
+The text appears to be the same color as the background, making it impossible to see what you're typing or what value is currently in the field.
+
+**User Impact**:
+- Can't see text while editing these fields
+- Unclear if edits were successful
+- Forces blind typing or requires workarounds
+- Likely affects all multi-line/text input widgets
+
+**Current Behavior**:
+- Dropdown fields work fine (status, priority, type)
+- Text input fields have invisible text (possibly white text on white background, or similar)
+- Affects the edit task screen specifically
+
+**Likely Cause**:
+- Text color not set or conflicts with background color in TUI styling
+- Missing foreground/text color in widget configuration
+- Possible theme/styling issue affecting Input widgets
+
+**Suggested Solution**:
+1. Check the TUI styling/theme configuration
+2. Ensure text input fields have explicit foreground color
+3. Verify contrast between text and background colors
+4. Test with different color schemes
+
+**Related Code**:
+- Edit task screen: `src/task_manager/tui/screens/edit_task_screen.py`
+- TUI app styling: `src/task_manager/tui/app.py` (check theme/CSS)
+- Input widget configuration: Check Textual Input widget styling
