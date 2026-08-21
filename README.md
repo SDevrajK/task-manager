@@ -28,9 +28,7 @@ task stats
 ```
 
 ### Project Integration
-- **CLAUDE.md Integration**: Automatically sync tasks with project documentation
-- **Activate Workflows**: Quick activation or full PRD-based workflows
-- **Project Management**: Track tasks across multiple projects
+- **Project Management**: Track tasks across multiple projects with lab and path metadata
 
 ## Installation
 
@@ -114,22 +112,6 @@ Configuration is stored in `data/config.json`. Customize:
 - Log levels
 - Default project
 - Time tracking settings
-
-## CLAUDE.md Integration
-
-When a task is activated, it can automatically update your project's `CLAUDE.md`:
-
-### Quick Activation
-Updates the task status and adds to `### Upcoming Tasks` section in CLAUDE.md.
-
-### PRD Activation
-Updates status and shows recommended next steps:
-```
-1. Navigate to project directory
-2. Run: /create-prd
-3. Run: /generate-tasks
-4. Run: /process-tasks
-```
 
 ## CLI Command Reference
 
@@ -257,7 +239,6 @@ src/task_manager/
 ├── validation.py          # Schema validation
 ├── date_parser.py         # Natural language date parsing
 ├── logger.py              # Logging infrastructure
-├── claude_integration.py  # CLAUDE.md integration
 └── tui/                   # Interactive TUI components
     ├── app.py             # Main Textual application
     ├── widgets/           # UI widgets
@@ -279,10 +260,6 @@ src/task_manager/
 ### Tasks not appearing in TUI
 - Check that `data/task-bucket.json` exists and is readable
 - Verify data format with: `task list --format json`
-
-### CLAUDE.md integration not working
-- Ensure project paths are set correctly in `data/projects.json`
-- Check that CLAUDE.md has `### Upcoming Tasks` section
 
 ### Slow performance with many tasks
 - Consider archiving or deleting completed tasks

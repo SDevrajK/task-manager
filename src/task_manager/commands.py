@@ -398,7 +398,6 @@ class TaskCommands:
             "path": path,
             "status": status,
             "last_accessed": datetime.now().strftime("%Y-%m-%d"),
-            "has_claude_md": False,
             "has_readme": False,
             "has_docs": False,
             "description": description,

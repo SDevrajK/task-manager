@@ -60,3 +60,7 @@ logs/
 # Task-manager specific
 *.bak
 temp/
+
+# AI assistant configuration (not part of the project)
+.claude/
+CLAUDE.md

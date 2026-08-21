@@ -14,9 +14,8 @@ Currently, `employer_client` is stored on individual tasks, but logically all ta
 - Data is redundant and prone to inconsistency
 
 **Example**:
-- Project "eda-calorique" belongs to "HébertLab"
-- All 6 tasks in this project had to be manually updated to set `employer_client = "HébertLab"`
-- If the project moved to a different lab, all 6 tasks would need updating
+- A project belonging to a single lab requires every task to set the same `employer_client` value manually
+- If the project moves to a different lab, every task must be updated individually
 
 **Files Affected**:
 - `src/task_manager/models.py` - Task model (has `employer_client` field)
@@ -48,10 +47,10 @@ Currently, `employer_client` is stored on individual tasks, but logically all ta
 **Status**: Identified (2026-01-09)
 
 **Description**:
-When tasks are modified via Claude Code, CLI, or other external methods while the TUI is running, the TUI doesn't automatically refresh to show the changes. Users must close and reopen the app to see the updated data.
+When tasks are modified via the CLI or other external methods while the TUI is running, the TUI doesn't automatically refresh to show the changes. Users must close and reopen the app to see the updated data.
 
 **User Impact**:
-- Claude Code updates a task but TUI shows old data
+- The CLI updates a task but TUI shows old data
 - Confusing when working in multiple interfaces simultaneously
 - Forces workflow interruption (close/reopen)
 

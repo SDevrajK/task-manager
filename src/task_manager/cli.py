@@ -353,7 +353,7 @@ Examples:
     )
     addproject_parser.add_argument(
         "--lab",
-        help="Lab name (DudaLab, HébertLab, etc.)",
+        help="Lab name",
     )
     addproject_parser.add_argument(
         "--path",

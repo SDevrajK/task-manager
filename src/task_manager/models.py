@@ -160,7 +160,6 @@ class Project:
     path: Optional[str] = None
     status: str = "active"  # active, paused, completed
     last_accessed: Optional[str] = None
-    has_claude_md: bool = False
     has_readme: bool = False
     has_docs: bool = False
     description: Optional[str] = None

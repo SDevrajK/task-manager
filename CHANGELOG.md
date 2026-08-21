@@ -17,8 +17,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Task detail preview pane
 - Task creation and editing screens
 - Action dialogs (activate, complete, deactivate, delete)
-- CLAUDE.md integration for project workflows
-- Activate workflows: quick (status + CLAUDE.md) and PRD-based
 - Project management with automatic code/name lookup
 - Time tracking and logging
 - Advanced search and filtering
@@ -32,11 +30,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Counter display bug**: Fixed TUI showing 0 for all task counters
 - **Status mismatch**: Unified status terminology across CLI and TUI
 - **View cycling**: Ctrl-H now works in all views (was only in default view)
-- **CLAUDE.md integration**: Properly adds/removes tasks from project documentation
 
 ### Changed
 - Migrated from separate bash (tasks) and Python (task) scripts to unified tool
-- Changed data storage location from `~/.claude/` to `~/projects/task-manager/data/`
+- Changed data storage location to the project `data/` directory
 - TUI is now default mode when running `task` with no arguments
 - Status values: Internal keeps TODO/IN_PROGRESS/DONE/BLOCKED, display uses "Pending/Active/Completed/Blocked"
 
@@ -55,8 +52,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Migration Notes
 **From previous version:**
-- Old codebase archived to `~/.claude/scripts/legacy/`
-- Data files automatically migrated from `~/.claude/` to `data/` directory
+- Old codebase archived to a local `legacy/` directory
+- Data files automatically migrated to the `data/` directory
 - All existing CLI commands remain functional
 - Projects.json and task data formats unchanged
 
